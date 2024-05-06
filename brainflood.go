@@ -19,7 +19,6 @@ type BrainfloodGlobal struct {
 	Description string
 	Language    string
 	Tags        []string
-	License     string
 	Author      string
 }
 
@@ -28,7 +27,6 @@ func (b Brainflood) GetInfo() {
 	fmt.Println(b.Global.Description)
 	fmt.Println(b.Global.Language)
 	fmt.Println(b.Global.Tags)
-	fmt.Println(b.Global.License)
 	fmt.Println(b.Global.Author)
 }
 
