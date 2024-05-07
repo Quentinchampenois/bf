@@ -9,6 +9,10 @@ Thanks to the `brainflood` command, you can create a new project, list all your 
 When a new project is created, it add an entry in file `.registry`. This file is located in the root directory of the project. It contains the name of the project and the path to the project.
 Thanks to this entry, we can find quickly the project on the filesystem and the purpose.
 
+## Usage
+
+Define `BF_REGISTRY` environment variable to the path of the registry file.
+
 ## Todo 
 
 * [ ] Add a way to remove a project
