@@ -5,8 +5,10 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/urfave/cli/v2"
+	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 var homeDir = os.Getenv("HOME")
@@ -51,13 +53,13 @@ func main() {
 
 			bf.Global.Language = result
 
-			Writeinfile(".registry", currentPath)
+			AppendToFile(".registry", currentPath)
 			b, err := toml.Marshal(bf)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			Writeinfile(fmt.Sprintf("%s/%s", currentPath, ".brainflood"), string(b))
+			AppendToFile(fmt.Sprintf("%s/%s", currentPath, ".brainflood"), string(b))
 			return nil
 		},
 	}
@@ -68,15 +70,27 @@ func main() {
 	//Projects()
 }
 
-func Writeinfile(filename, data string) {
-	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+func AppendToFile(filename, data string) {
+	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
+	defer f.Close()
+
 	if err != nil {
 		fmt.Println(err.Error())
+		return
 	}
-	if _, err := f.Write([]byte(fmt.Sprintf("%s\n", data))); err != nil {
+
+	content, err := io.ReadAll(f)
+	if err != nil {
 		fmt.Println(err.Error())
+		return
 	}
-	if err := f.Close(); err != nil {
+
+	// No need to append path if it already exists
+	if strings.Contains(string(content), data) {
+		return
+	}
+
+	if _, err := f.Write([]byte(fmt.Sprintf("%s\n", data))); err != nil {
 		fmt.Println(err.Error())
 	}
 }
