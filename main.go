@@ -13,6 +13,8 @@ import (
 
 var registryPath = os.Getenv("BF_REGISTRY")
 
+const registryFilename = ".brainflood-registry"
+
 func main() {
 	if registryPath == "" {
 		fmt.Println("Please set the BF_REGISTRY environment variable")
@@ -57,7 +59,7 @@ func main() {
 
 					bf.Global.Language = result
 
-					AppendToFile(fmt.Sprintf("%s/.registry", registryPath), currentPath)
+					AppendToFile(fmt.Sprintf("%s/%s", registryPath, registryFilename), currentPath)
 					b, err := toml.Marshal(bf)
 					if err != nil {
 						log.Fatal(err)
@@ -72,7 +74,7 @@ func main() {
 				Aliases: []string{"l"},
 				Usage:   "list all brainflood projects",
 				Action: func(*cli.Context) error {
-					bytes, err := ReadFile(fmt.Sprintf("%s/.registry", registryPath))
+					bytes, err := ReadFile(fmt.Sprintf("%s/%s", registryPath, registryFilename))
 					if err != nil {
 						log.Fatal(err)
 					}
