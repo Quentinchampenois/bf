@@ -13,7 +13,7 @@ import (
 
 var registryPath = os.Getenv("BF_REGISTRY")
 
-const registryFilename = ".brainflood-registry"
+const registryFilename = ".bf-registry"
 
 func main() {
 	if registryPath == "" {
@@ -26,11 +26,11 @@ func main() {
 			{
 				Name:    "new",
 				Aliases: []string{"n"},
-				Usage:   "create a new brainflood project",
+				Usage:   "create a new bf project",
 				Action: func(*cli.Context) error {
 					currentPath, _ := os.Getwd()
 
-					bf := Brainflood{
+					bf := Bf{
 						Path: currentPath,
 					}
 					prompt := promptui.Prompt{
@@ -65,14 +65,14 @@ func main() {
 						log.Fatal(err)
 					}
 
-					AppendToFile(fmt.Sprintf("%s/%s", currentPath, ".brainflood"), string(b))
+					AppendToFile(fmt.Sprintf("%s/%s", currentPath, ".bf"), string(b))
 					return nil
 				},
 			},
 			{
 				Name:    "list",
 				Aliases: []string{"l"},
-				Usage:   "list all brainflood projects",
+				Usage:   "list all bf projects",
 				Action: func(*cli.Context) error {
 					bytes, err := ReadFile(fmt.Sprintf("%s/%s", registryPath, registryFilename))
 					if err != nil {
@@ -80,30 +80,30 @@ func main() {
 					}
 
 					paths := strings.Split(string(bytes), "\n")
-					projects := make([]Brainflood, 0, len(paths)-1)
+					projects := make([]Bf, 0, len(paths)-1)
 					for _, p := range paths {
 						if p == "" {
 							continue
 						}
-						content, err := ReadFile(fmt.Sprintf("%s/%s", p, ".brainflood"))
+						content, err := ReadFile(fmt.Sprintf("%s/%s", p, ".bf"))
 						if err != nil {
 							fmt.Println("Errors reading")
 							fmt.Println(err.Error())
 							continue
 						}
 
-						brainflood := Brainflood{
+						bf := Bf{
 							Path: p,
 						}
 
-						err = toml.Unmarshal(content, &brainflood)
+						err = toml.Unmarshal(content, &bf)
 						if err != nil {
 							fmt.Println("Errors")
 							fmt.Println(err.Error())
 							continue
 						}
 
-						projects = append(projects, brainflood)
+						projects = append(projects, bf)
 					}
 
 					if len(projects) < 1 {

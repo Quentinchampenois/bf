@@ -6,12 +6,12 @@ import (
 
 const filename = ".brainflood"
 
-type Brainflood struct {
-	Global BrainfloodGlobal `toml:"global"`
+type Bf struct {
+	Global BfGlobal `toml:"global"`
 	Path   string
 }
 
-type BrainfloodGlobal struct {
+type BfGlobal struct {
 	Name        string
 	Description string
 	Language    string
@@ -19,7 +19,7 @@ type BrainfloodGlobal struct {
 	Author      string
 }
 
-func (b Brainflood) GetInfo() {
+func (b Bf) GetInfo() {
 	fmt.Println(b.Global.Name)
 	fmt.Println(b.Global.Description)
 	fmt.Println(b.Global.Language)
