@@ -11,9 +11,6 @@ import (
 	"strings"
 )
 
-var homeDir = os.Getenv("HOME")
-var projectsDir = fmt.Sprintf("%s/Documents/local", homeDir)
-
 func main() {
 	app := &cli.App{
 		Commands: []*cli.Command{
@@ -78,18 +75,23 @@ func main() {
 					paths := strings.Split(string(bytes), "\n")
 					projects := make([]Brainflood, 0, len(paths)-1)
 					for _, p := range paths {
+						if p == "" {
+							continue
+						}
 						content, err := ReadFile(fmt.Sprintf("%s/%s", p, ".brainflood"))
 						if err != nil {
+							fmt.Println("Errors reading")
 							fmt.Println(err.Error())
 							continue
 						}
 
-						fmt.Println(fmt.Sprintf("%s/%s", p, ".brainflood"))
-
-						brainflood := Brainflood{}
+						brainflood := Brainflood{
+							Path: p,
+						}
 
 						err = toml.Unmarshal(content, &brainflood)
 						if err != nil {
+							fmt.Println("Errors")
 							fmt.Println(err.Error())
 							continue
 						}
@@ -116,11 +118,8 @@ func main() {
 					_, result, _ := promptSelect.Run()
 					for _, p := range projects {
 						if p.Global.Name == result {
-							fmt.Println(p.Global.Name)
 							fmt.Println(p.Global.Description)
-							fmt.Println(p.Global.Language)
-							fmt.Println(p.Global.Tags)
-							fmt.Println(p.Global.Author)
+							fmt.Println(p.Path)
 						}
 					}
 
@@ -133,11 +132,14 @@ func main() {
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
-	//Projects()
 }
 
 func ReadFile(filepath string) ([]byte, error) {
-	f, err := os.OpenFile(filepath, os.O_APPEND|os.O_CREATE|os.O_RDONLY, 0644)
+	f, err := os.OpenFile(filepath, os.O_RDONLY, 0644)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
 	defer f.Close()
 	bytes, err := io.ReadAll(f)
 
